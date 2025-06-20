@@ -3,7 +3,7 @@ import { Request } from "express"
 export interface User {
     id: string;
     email: string;
-    password: string;
+    password?: string;
     role: string;
     created_at: Date;
     updated_at: Date;
@@ -40,3 +40,16 @@ export interface AuditLog {
 export interface AuthenticatedRequest extends Request {
     user?: User;
 }
+
+export interface UserTokenResponse {
+    user: User
+    token: string
+}
+
+export interface JWTPayload {
+    userId: string;
+    email: string;
+    role: string;
+    iat?: number;
+    exp?: number;
+  }
