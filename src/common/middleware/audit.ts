@@ -4,15 +4,15 @@ import pool from "../../db/config";
 
 export const auditLog = (action: string, resourceType: string) => {
     return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-      // Store original end function
+
       const originalEnd = res.end;
       
-      // Override end function to capture response
+
       res.end = function(chunk?: any, encoding?: any) {
-        // Call original end function
+
         originalEnd.call(this, chunk, encoding);
         
-        // Log the audit entry
+
         if (req.user && res.statusCode < 400) {
           const resourceId = req.params.id || req.body?.id || null;
           

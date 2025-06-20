@@ -4,9 +4,11 @@ export interface User {
     id: string;
     email: string;
     password?: string;
-    role: string;
+    role_id: string;
     created_at: Date;
     updated_at: Date;
+
+    role: Role
 }
 
 export interface FileRecord {
@@ -37,8 +39,24 @@ export interface AuditLog {
     created_at: Date;
 }
 
+export interface Role {
+    id: string;
+    name: string;
+    status: string;
+    created_at: string
+}
+
+export interface RolePermissions {
+    id: string;
+    role_id:string;
+    role_name: string;
+    object: string;
+    action: string;
+    created_at: string
+}
+
 export interface AuthenticatedRequest extends Request {
-    user?: User;
+    user: JWTPayload;
 }
 
 export interface UserTokenResponse {
@@ -47,9 +65,11 @@ export interface UserTokenResponse {
 }
 
 export interface JWTPayload {
-    userId: string;
+    id: string;
     email: string;
-    role: string;
+    role_id: string;
     iat?: number;
     exp?: number;
-  }
+
+    role: Role
+}

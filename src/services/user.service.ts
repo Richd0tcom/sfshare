@@ -6,9 +6,9 @@ import { User } from "../types";
 class UserService {
   async createUser(email: string, password: string, role: string): Promise<User> {
     const result = await pool.query<User>(
-      `INSERT INTO users (email, password, role) 
+      `INSERT INTO users (email, password, role_id) 
          VALUES ($1, $2, $3) 
-         RETURNING id, email, role, created_at, updated_at`,
+         RETURNING *`,
       [email, password, role]
     );
 

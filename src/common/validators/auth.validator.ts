@@ -1,27 +1,21 @@
 import Joi from 'joi'
 import { validationMiddleware } from "../middleware/validation";
 
-export const UserValidator = {
-
-  getUserById: () =>
-    validationMiddleware({
-      params: {
-        id: Joi.string().required(),
-      },
-    }),
-  createUser: () =>
+export const AuthValidator = {
+  signup: () =>
     validationMiddleware({
       body: {
         email: Joi.string().email().required(),
         password: Joi.string().required(),
         role: Joi.string().valid("admin", "manager", "employee").required(),
-        full_name: Joi.string().required(),
       },
     }),
-  updateUserById: () =>
+  login: () =>
     validationMiddleware({
-      params: {
-        id: Joi.string().required(),
+      body: {
+        email: Joi.string().email().required(),
+        password: Joi.string().required(),
       },
     }),
+
 };

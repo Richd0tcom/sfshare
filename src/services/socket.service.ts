@@ -50,24 +50,24 @@ import { Server as SocketIOServer } from 'socket.io';
         const user = socket.data.user as JWTPayload;
         
         // Store connected user
-        this.connectedUsers.set(user.userId, {
-          userId: user.userId,
+        this.connectedUsers.set(user.id, {
+          userId: user.id,
           email: user.email,
-          role: user.role,
+          role: user.role_id,
           socketId: socket.id
         });
   
         logger.info(`User connected: ${user.email} (${socket.id})`);
   
         socket.on('disconnect', () => {
-          this.connectedUsers.delete(user.userId);
+          this.connectedUsers.delete(user.id);
           logger.info(`User disconnected: ${user.email} (${socket.id})`);
         });
   
         // Send welcome message
         socket.emit('connected', { 
           message: 'Connected to file sharing service',
-          userId: user.userId 
+          userId: user.id
         });
       });
     }

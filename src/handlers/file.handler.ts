@@ -9,11 +9,14 @@ export const uploadFile = async (req: AuthenticatedRequest, res: Response): Prom
     try {
 
      if (!req.file) {
+        // console.log(req)
         res.status(400).json({ error: 'No file uploaded' });
         return;
       }
 
       const { permissionLevel = 'private', tags = [], metadata = {} } = req.body;
+
+      console.log(req.user.id)
 
       const file = await FileService.saveFile(
         req.file,
@@ -24,14 +27,14 @@ export const uploadFile = async (req: AuthenticatedRequest, res: Response): Prom
       );
 
       // If admin uploads a file, notify all connected users
-      if (req.user!.role === 'admin') {
+      if (req.user!.role.name === 'admin') {
         const socketManager = getSocketManager();
         socketManager.notifyAllUsers('file_uploaded', {
           file: {
             id: file.id,
             original_name: file.original_name,
             permission_level: file.permission_level,
-            owner_email: req.user!.email,
+            owner_id: req.user!.id,
             created_at: file.created_at
           }
         });
@@ -67,7 +70,7 @@ export const getFiles =     async (req: AuthenticatedRequest, res: Response): Pr
 
       const result = await FileService.getFiles(
         req.user!.id,
-        req.user!.role,
+        req.user!.role_id,
         page,
         limit,
         search,
@@ -85,7 +88,7 @@ export const getFiles =     async (req: AuthenticatedRequest, res: Response): Pr
 export const getSingleFile =     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const fileId = req.params.id;
-      const file = await FileService.getFileById(fileId, req.user!.id, req.user!.role);
+      const file = await FileService.getFileById(fileId, req.user!.id, req.user!.role.name);
 
       if (!file) {
         res.status(404).json({ error: 'File not found' });
@@ -125,7 +128,7 @@ export const updateFileMetadata =  async (req: AuthenticatedRequest, res: Respon
         updates[key as keyof typeof updates] === undefined && delete updates[key as keyof typeof updates]
       );
 
-      const originalFile = await FileService.getFileById(fileId, req.user!.id, req.user!.role);
+      const originalFile = await FileService.getFileById(fileId, req.user!.id, req.user!.role.name);
       if (!originalFile) {
         res.status(404).json({ error: 'File not found' });
         return;
@@ -134,7 +137,7 @@ export const updateFileMetadata =  async (req: AuthenticatedRequest, res: Respon
       const updatedFile = await FileService.updateFileMetadata(
         fileId,
         req.user!.id,
-        req.user!.role,
+        req.user!.role.name,
         updates
       );
 
@@ -144,7 +147,7 @@ export const updateFileMetadata =  async (req: AuthenticatedRequest, res: Respon
       }
 
       // If admin updates metadata, notify file owner if they are online
-      if (req.user!.role === 'admin' && originalFile.owner_id !== req.user!.id) {
+      if (req.user!.role.name === 'admin' && originalFile.owner_id !== req.user!.id) {
         const socketManager = getSocketManager();
         socketManager.notifyUser(originalFile.owner_id, 'file_metadata_updated', {
           file: {

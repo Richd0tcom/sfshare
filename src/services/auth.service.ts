@@ -4,12 +4,16 @@ import logger from "../utils/logger";
 import { compare, hash } from 'bcrypt'
 import UserService from "./user.service";
 import * as jwt from 'jsonwebtoken';
+import RoleService from "./role.service";
 
 class AuthService {
-    async registerUser(email: string, password: string, role: string = 'employee'): Promise<User> {
+    async registerUser(email: string, password: string): Promise<User> {
         const hashedPassword = await hash(password, 12);
 
-        const user = await UserService.createUser(email, hashedPassword, role)
+        const role = await RoleService.getRoleByName('employee')
+        console.log(role)
+
+        const user = await UserService.createUser(email, hashedPassword, role.id)
         return user;
     }
 
@@ -26,13 +30,13 @@ class AuthService {
         if (!isValidPassword) {
             throw new Error('Invalid credentials');
         }
-
         const payload = {
-            userId: user.id,
+            id: user.id,
             email: user.email,
-            role: user.role
+            role_id: user.role_id
         };
 
+        console.log(process.env.JWT_SECRET!)
         const token = jwt.sign(payload, process.env.JWT_SECRET!);
 
         delete user.password;

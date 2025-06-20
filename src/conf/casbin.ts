@@ -1,4 +1,5 @@
 import { Enforcer, newEnforcer } from "casbin";
+import { join } from "path";
 
 const policies = [
 
@@ -23,7 +24,7 @@ const policies = [
 export const defineActions = (method: string): string => {
     switch (method) {
         case "POST":
-            return 'upload'
+            return 'create'
         case "PATCH":
             return "update"
         case "GET":
@@ -37,7 +38,7 @@ let enforcer: Enforcer;
 
 export const initCasbin = async (): Promise<Enforcer> => {
 
-    enforcer = await newEnforcer('casbin.conf');
+    enforcer = await newEnforcer(join(process.cwd(),'src','conf','casbin.conf'));
 
     for (const policy of policies) {
         await enforcer.addPolicy(...policy);

@@ -3,7 +3,7 @@ import logger from "../utils/logger";
 import pool from "../db/config";
 import { AuthenticatedRequest } from "../types";
 
-const fetchLogs =     async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+const fetchLogs = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;

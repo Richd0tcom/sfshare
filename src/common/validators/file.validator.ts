@@ -2,42 +2,42 @@ import Joi from 'joi'
 import { validationMiddleware } from "../middleware/validation";
 
 export const Validator = {
-  signup: () =>
+  upload: () =>
     validationMiddleware({
       body: {
-        email: Joi.string().email().required(),
-        password: Joi.string().required(),
-        role: Joi.string().valid("INDIVIDUAL", "COACH", "FACILITY").required(),
-        full_name: Joi.string().required(),
+        tags: Joi.array(),
+        metadata: Joi.object(),
+        permissionLevel: Joi.string().valid('private', 'shared', 'public'),
       },
     }),
-  login: () =>
+  getfiles: () =>
     validationMiddleware({
+      query: {
+        page: Joi.number().min(1),
+        limit: Joi.number().min(1).max(5),
+        search: Joi.string(),
+        permissionLevel: Joi.string().valid('private', 'shared', 'public'),
+        tags: Joi.string(),
+
+      }
+    }),
+
+  getFileById: () =>
+    validationMiddleware({
+      params: {
+        id: Joi.string().required(),
+      },
+    }),
+  updateFile: () =>
+    validationMiddleware({
+      params: {
+        id: Joi.string().required(),
+      },
       body: {
-        email: Joi.string().email().required(),
-        password: Joi.string().required(),
+        tags: Joi.array(),
+        metadata: Joi.object(),
+        permissionLevel: Joi.string().valid('private', 'shared', 'public'),
       },
     }),
 
-  getUserById: () =>
-    validationMiddleware({
-      params: {
-        id: Joi.string().required(),
-      },
-    }),
-  createUser: () =>
-    validationMiddleware({
-      body: {
-        email: Joi.string().email().required(),
-        password: Joi.string().required(),
-        role: Joi.string().valid("INDIVIDUAL", "COACH", "FACILITY").required(),
-        full_name: Joi.string().required(),
-      },
-    }),
-  updateUserById: () =>
-    validationMiddleware({
-      params: {
-        id: Joi.string().required(),
-      },
-    }),
 };

@@ -9,33 +9,33 @@ import express from 'express';
  import {router, frouter, auditrouter} from './routes'
   import createTables from './db/migrate';
   import logger from './utils/logger';
+import { config } from 'dotenv'  
+import { Authenticate } from './common/middleware/auth';
 
-  import * as routes from './routes'
-  
+  config()
   const app = express();
   const server = createServer(app);
-  const PORT = process.env.PORT || 3000;
+ 
   
   // Security middleware
   app.use(helmet());
   app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL || "http://localhost:3005",
     credentials: true
   }));
   app.use(compression());
-//   app.use(generalLimiter);
+
   
-  // Body parsing middleware
+
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   
-  // Request logging
+
   app.use((req, res, next) => {
     logger.info(`${req.method} ${req.path} - ${req.ip}`);
     next();
   });
   
-  // Health check endpoint
   app.get('/health', (req, res) => {
     res.json({ 
       status: 'healthy', 
@@ -46,6 +46,8 @@ import express from 'express';
   
 
   app.use('/api/auth', router);
+
+  app.use(Authenticate())
   app.use('/api/files', frouter);
   app.use('/api/audit', auditrouter);
   
@@ -53,11 +55,6 @@ import express from 'express';
   app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
     logger.error('Unhandled error:', err);
     res.status(500).json({ error: 'Internal server error' });
-  });
-  
-  // 404 handler
-  app.use('*', (req, res) => {
-    res.status(404).json({ error: 'Route not found' });
   });
   
   createTables().then(async()=>{

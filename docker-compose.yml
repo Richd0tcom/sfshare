@@ -1,0 +1,23 @@
+services:
+  postg:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      - POSTGRES_PASSWORD=asdfgh
+      - POSTGRES_USER=root
+      - POSTGRES_DB=filesharing
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-root} -d ${POSTGRES_DB:-siren_db}"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+
+volumes:
+  postgres_data:

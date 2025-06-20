@@ -1,14 +1,17 @@
 import { Pool } from 'pg';
 import { config } from 'dotenv';
+import { join } from 'path';
 
-config()
+config({
+  path: join(process.cwd(),'../.env')
+})
 
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
+  user: process.env.DB_USER || 'root',
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'filesharing',
-  password: process.env.DB_PASSWORD || 'password',
-  port: parseInt(process.env.DB_PORT || '5432'),
+  password: process.env.DB_PASSWORD || 'asdfgh',
+  port: parseInt(process.env.DB_PORT || '5433'),
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,

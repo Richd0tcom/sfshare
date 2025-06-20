@@ -5,6 +5,26 @@ const createTables = async () => {
     
     try {
       await client.query('BEGIN');
+
+      await client.query(`
+      CREATE TABLE IF NOT EXISTS roles (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name VARCHAR(100), 
+        status VARCHAR(100) NOT NULL DEFAULT 'active',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS role_permissions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+        role_name VARCHAR(100) NOT NULL,
+        object VARCHAR(100),
+        action VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
       
       // Users table
       await client.query(`
@@ -12,7 +32,7 @@ const createTables = async () => {
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           email VARCHAR(255) UNIQUE NOT NULL,
           password VARCHAR(255) NOT NULL,
-          role VARCHAR(50) NOT NULL DEFAULT 'employee',
+          role_id UUID NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
