@@ -9,7 +9,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 export class AuditService {
 
   constructor(
-    @Inject() private auditModel: ModelClass<AuditLog>
+    @Inject('AuditLog') private auditModel: ModelClass<AuditLog>
   ) {}
 
   @OnEvent('log-activity')

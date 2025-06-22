@@ -1,173 +1,98 @@
-# sfshare - Secure Role-Based File Sharing (PoC)
-  This project simulates a comprehensive backend service for secure file sharing with role-based access control, real-time notifications, and audit logging.
-  
-  ### Features
-  
-  #### Core Requirements 
-  - **Token-based Authentication**: JWT-based authentication system
-  - **Role-based Access Control**: Using Casbin for flexible permission management
-  - **File Operations**: Upload, list, search, and filter files with pagination
-  - **Real-time Notifications**: 
-    - Admin file uploads notify all connected users
-    - Admin metadata updates notify file owners (if online)
-  - **Permission Levels**: private, shared, public file access
-  
-  #### Bonus Features 
-  - **File Encryption at Rest**: AES-256-GCM encryption for uploaded files
-  - **Comprehensive Audit Logging**: Track all file operations and user actions
-  - **Advanced Security**: Rate limiting, input validation, security headers
-  
-  #### Security Features
-  - **Password Hashing**: bcrypt with salt rounds
-  - **Input Validation**: Express-validator for all endpoints
-  - **Security Headers**: Helmet.js for HTTP security headers
-  - **CORS Protection**: Configurable cross-origin resource sharing
-  
-  ### Architecture
-  
-  #### Tech Stack
-  - **Runtime**: Node.js with TypeScript
-  - **Framework**: Express.js
-  - **Database**: PostgreSQL with connection pooling
-  - **Authorization**: Casbin for RBAC
-  - **Real-time**: Socket.IO for WebSocket connections
-  - **Encryption**: Node.js crypto module (AES-256-GCM)
-  - **Logging**: Winston for structured logging
-  
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
 
-  ### API Endpoints
-  
-  #### Authentication
-  ```
-  POST /api/auth/register - Register new user
-  POST /api/auth/login    - User login
-  ```
-  
-  #### File Management
-  ```
-  POST   /api/files/upload - Upload new file
-  GET    /api/files        - List files (with pagination, search, filters)
-  GET    /api/files/:id    - Get specific file details
-  PUT    /api/files/:id    - Update file metadata
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  ```
-  
-  #### Audit (Admin only)
-  ```
-  GET /api/audit - Retrieve audit logs with filtering
-  ```
-  
-  ### Role-Based Permissions
-  
-  #### Admin
-  - Upload, read, update, delete files
-  - Access all files regardless of permission level
-  - Read audit logs
-  - Manage users
-  
-  #### Manager
-  - Upload, read, update files
-  - Access own files + shared/public files
-  
-  #### Employee
-  - Upload and read files only
-  - Access own files + shared/public files
-  
-  ### Real-time Features
-  
-  #### WebSocket Events
-  - `file_uploaded`: Broadcast when admin uploads a file
-  - `file_metadata_updated`: Notify file owner when admin updates metadata
-  - `connected`: Welcome message on connection
-  
-  ### Security Considerations
-  
-  #### File Encryption
-  - AES-256-GCM encryption for files
-  - Unique encryption keys per file
-  - IV and authentication tag storage
-  - Secure key generation
-  
-  #### Audit Trail
-  - All file operations logged
-  - User identification and IP tracking
-  - Timestamp and action details
-  - Browser fingerprinting via User-Agent
-  
-  ### Setup Instructions
-  
-  #### Prerequisites
-  - Node.js 18+
-  - PostgreSQL 12+ (or Docker)
-  - pnpm or yarn
-  
-  #### Installation
-  ```bash
-  # Clone and install dependencies
-  npm install
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-  # setup the DB
-  docker compose up -d
-  
-  # Set up environment variables
-  cp .env.example .env
-  # Edit .env with your configuration
-  
-  # Development
-  pnpm run dev
-  
-  # Production
-  pnpm run build
-  pnpm start
-  ```
-  
-  #### Environment Configuration
-  ```env
-  # Database
-  DB_HOST=localhost
-  DB_PORT=5432
-  DB_USER=postgres
-  DB_PASSWORD=your_password
-  DB_NAME=filesharing
-  
-  # Security
-  JWT_SECRET=your-secure-secret-key
-  ENCRYPT_FILES=true
-  
-  # Server
-  PORT=3000
-  NODE_ENV=production
-  ```
-  
- 
-  
-  #### Logging
-  - Structured JSON logging with Winston
-  - Separate error and combined log files
-  - Request/response logging with IP tracking
+## Description
 
-  
-  #### Health Check
-  ```
-  GET /health - Server health status
-  ```
-  
-  ### Production Considerations
-  
-  #### Performance
-  - Connection pooling for database
-  - File upload size limits (100MB)
-  - Pagination for large datasets
-  - Compression middleware
-  
-  #### Scalability
-  - Stateless design for horizontal scaling
-  - Database indexing for query performance
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-  
-  #### Security Hardening
-  - Database connection encryption
-  - Regular security audits
+## Project setup
 
-### TODO
-- Refactor for cleaner types and separation of conserns
+```bash
+$ pnpm install
+```
+
+## Compile and run the project
+
+```bash
+# development
+$ pnpm run start
+
+# watch mode
+$ pnpm run start:dev
+
+# production mode
+$ pnpm run start:prod
+```
+
+## Run tests
+
+```bash
+# unit tests
+$ pnpm run test
+
+# e2e tests
+$ pnpm run test:e2e
+
+# test coverage
+$ pnpm run test:cov
+```
+
+## Deployment
+
+When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+
+If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+
+```bash
+$ pnpm install -g @nestjs/mau
+$ mau deploy
+```
+
+With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+
+## Resources
+
+Check out a few resources that may come in handy when working with NestJS:
+
+- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
+- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
+- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
+- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
+- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
+- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
+- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
+- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+
+## Support
+
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+
+## Stay in touch
+
+- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
+
+## License
+
+Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

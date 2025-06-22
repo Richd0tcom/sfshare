@@ -11,13 +11,13 @@ import type { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   return await knex.schema
-    .createTableIfNotExists('roles', (table) => {
+    .createTable('roles', (table) => {
       table.uuid('id').primary().notNullable();
       table.string('name').notNullable().unique();
       table.string('status').notNullable().defaultTo('active');
       table.timestamps(true, true);
     })
-    .createTableIfNotExists('rolePermissions', (table) => {
+    .createTable('rolePermissions', (table) => {
       table.uuid('id').primary().notNullable();
       table.uuid('roleId').notNullable().references('id').inTable('roles').onDelete('CASCADE');
       table.string('roleName').notNullable();
@@ -25,17 +25,18 @@ export async function up(knex: Knex): Promise<void> {
       table.string('action').notNullable();
       table.timestamps(true, true, true);
     })
-    .createTableIfNotExists('users', (table) => {
+    .createTable('users', (table) => {
       table.uuid('id').primary().notNullable();
       table
         .string('email')
         .notNullable()
         .unique()
         .index('users_email_index');
-      table.string('roleId').notNullable().references('id').inTable('roles').onDelete('CASCADE');
+      table.string('password').notNullable();
+      table.uuid('roleId').notNullable().references('id').inTable('roles').onDelete('CASCADE');
       table.timestamps(true, true, true);
     })
-    .createTableIfNotExists('files', (table) => {
+    .createTable('files', (table) => {
       table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
       table.string('filename', 255).notNullable();
       table.string('originalName', 255).notNullable();
@@ -49,8 +50,7 @@ export async function up(knex: Knex): Promise<void> {
       table.jsonb('metadata').defaultTo(knex.raw("'{}'::jsonb"));
       
       table.timestamps(true, true, true);
-    })
-    .createTableIfNotExists('auditLogs', (table) => {
+    }).createTable('auditLogs', (table) => {
       table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
       table.uuid('userId').notNullable().references('id').inTable('users').onDelete('CASCADE');
       table.string('action', 100).notNullable();

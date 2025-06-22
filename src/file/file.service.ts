@@ -1,8 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import multer from 'multer';
-import path from 'path';
 import fs from 'fs/promises';
-import { v4 as uuidv4 } from 'uuid';
 import { encryptFile, generateEncryptionKey } from '@common/helpers/encryption';
 import { CreateFileInput } from './dto/input/file.input';
 import { ModelClass } from 'objection';
@@ -18,7 +15,7 @@ export class FileService {
   private readonly logger = new Logger(FileService.name);
   constructor(
     @Inject('File') private filemodel: ModelClass<File>,
-    @Inject('File') private usermodel: ModelClass<User>,
+    @Inject('User') private usermodel: ModelClass<User>,
     private configSevice: ConfigService,
     private readonly socketGateway: SocketGateway,
 

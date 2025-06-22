@@ -4,7 +4,7 @@ import { config as cfig} from "dotenv";
 import { join} from 'path';
 cfig({
   
-  path: join(__dirname,'../../.env')
+  path: join(__dirname,'../../../.env')
 });
 
 
@@ -12,7 +12,7 @@ const config: { [key: string]: Knex.Config } = {
   development: {
     client: "pg",
     connection: {
-      database: process.env.DB_DATABASE,
+      database: process.env.DB_NAME,
       user: process.env.DB_USER,
       port: Number(process.env.DB_PORT),
       password: process.env.DB_PASSWORD,
@@ -36,7 +36,7 @@ const config: { [key: string]: Knex.Config } = {
     connection: {
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
-      database: process.env.DB_DATABASE,
+      database: process.env.DB_NAME,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       ssl: true

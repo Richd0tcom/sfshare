@@ -2,12 +2,12 @@ import { Global, Module } from '@nestjs/common';
 import { KnexModule } from 'nestjs-knex';
 import config from './knexfile';
 import { ConfigService } from '@nestjs/config';
-import { File, Role, RolePermission, User } from '@common/schema';
+import { AuditLog, File, Role, RolePermission, User } from '@common/schema';
 import { Model } from 'objection';
 
 
 
-const models = [User, File, Role, RolePermission, ];
+const models = [User, File, Role, RolePermission, AuditLog];
 const providers = models.map((model: typeof Model) => {
   return {
     provide: model.name,
@@ -25,6 +25,7 @@ const providers = models.map((model: typeof Model) => {
       useFactory: (configService: ConfigService) => ({
         config: config[configService.get<string>('NODE_ENV') || 'development'],
       }),
+      inject: [ConfigService]
     }),
   ],
   providers: [...providers],

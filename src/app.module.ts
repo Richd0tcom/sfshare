@@ -7,10 +7,12 @@ import { UserModule } from './user/user.module';
 import { FileModule } from './file/file.module';
 import { AuditModule } from './audit/audit.module';
 import { SocketModule } from './socket/socket.module';
-import { getAppConfig, getConfig } from './config/config';
+import { getConfig } from './config/config';
+import { DbModule } from '@common/db/db.module';
 
 @Module({
   imports: [
+    DbModule,
 
     ConfigModule.forRoot({
       isGlobal: true,

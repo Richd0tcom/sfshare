@@ -1,3 +1,4 @@
+import { hashPassword } from "../../helpers/password";
 import { Knex } from "knex"; 
 
 // import { hashPassword } from "../../common/helpers/password";

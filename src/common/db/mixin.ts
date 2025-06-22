@@ -8,11 +8,11 @@ import { DBErrors } from 'objection-db-errors';
 
 // Model.knex(KnexInstance);
 
-const modelUuid = guid()
+// const modelUuid = guid()
 /**
  * mixin plugin for UUID, Database errors and field visibility
  */
-const mixins = compose(visibility, DBErrors, modelUuid)
+const mixins = compose(visibility, DBErrors)
 
 
 export default mixins;
