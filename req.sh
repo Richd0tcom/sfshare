@@ -1,7 +1,7 @@
 curl -X POST \
 http://localhost:7321/api/files/upload \
 -H 'Content-Type: multipart/form-data' \
--H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhNGQyNzAyLTI2ZDEtNDJlOC05YTdmLTVkM2ZmMjgwOGI0MyIsImVtYWlsIjoicmljaEBnbWFpbC5jb20iLCJyb2xlX2lkIjoiZjVmYzRiYjgtODUxZC00Y2U1LTk3NmMtOWJkYjFiYmIzM2ZmIiwiaWF0IjoxNzUwNDMwNzYwfQ.RwK83nfLbNakF2itQ4R1mVeKCiJlC6oJhnWcSt6Jsq4' \
+-H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhjOTNjODgzLWZiMTgtNGRhNC05NzcwLTllZjJmNjZjYjQ2ZCIsInJvbGVJZCI6IjM1MmUyNTM0LTZiZTctNDAxYi1hM2U1LWQ4YTM5NDhlMDg0MSIsImlhdCI6MTc1MDU5NjI5OCwiZXhwIjoxNzUwNjAzNDk4fQ.irhIIBHbMI9nxw91LzDCr2S8QuBwkHv8qRLSnBEv5V4' \
 -F 'file=@file.txt'
 
 # List files with search

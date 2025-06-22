@@ -1,7 +1,7 @@
 import { compose } from 'objection';
 // import { KnexInstance } from './index';
 // import * as guid from 'objection-guid';
-import guid from 'objection-guid';
+// import guid from 'objection-guid';
 import visibility from 'objection-visibility';
 import { DBErrors } from 'objection-db-errors';
 

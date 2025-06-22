@@ -1,4 +1,4 @@
-import { Model, RelationMappings, RelationMappingsThunk, StaticHookArguments } from "objection";
+import { Model, RelationMappings, RelationMappingsThunk } from "objection";
 import mixins from "../db/mixin";
 import { Role } from "./roles.schema";
 import { hashPassword } from "@common/helpers/password";
@@ -28,7 +28,7 @@ export class User extends mixins(Model){
 
     role: {
       relation: Model.HasOneRelation,
-      modelClass: User,
+      modelClass: Role,
       join: {
         from: 'users.roleId',
         to: 'roles.id',
@@ -36,12 +36,9 @@ export class User extends mixins(Model){
     },
   };
 
-  static beforeInsert(args: StaticHookArguments<User>) {
-      args.inputItems = args.inputItems.map((item) => {
-        return User.fromJson({
-          ...item,
-          password: hashPassword(item.password),
-        });
-      })
+  $beforeInsert() {
+      this.password = hashPassword(this.password)
   }
+
+   
 }

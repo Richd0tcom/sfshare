@@ -3,25 +3,42 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  Logger,
+  Inject,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { CASBIN_PERMISSION_KEY, CASBIN_ROLE_KEY } from '../casbin/casbin.constants';
 import { CasbinService } from '../casbin/casbin.service';
+import { logger as lg } from '@common/helpers/logger';
+import { Role } from '@common/schema';
+import { ModelClass } from 'objection';
 
 @Injectable()
 export class CasbinGuard implements CanActivate {
+    private readonly logger = new Logger(CasbinGuard.name);
   constructor(
     private reflector: Reflector,
     private casbinService: CasbinService,
+    @Inject('Role') private roleModel: ModelClass<Role>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
+    this.logger.log(`User: ${JSON.stringify(user)}`);
+    
     if (!user) {
       throw new ForbiddenException('User not authenticated');
     }
+
+    const role = await this.roleModel.query().findById(user.roleId)
+    console.log(role)
+    this.logger.log(`Role: ${JSON.stringify(role)}`);
+    if(!role) {
+      throw new ForbiddenException('invalid credentials')
+    }
+    user.role = role;
 
     // Check for permission-based access
     const requiredPermission = this.reflector.getAllAndOverride<{
@@ -29,9 +46,10 @@ export class CasbinGuard implements CanActivate {
       action: string;
     }>(CASBIN_PERMISSION_KEY, [context.getHandler(), context.getClass()]);
 
+    console.log('reqiPerm: ', requiredPermission)
     if (requiredPermission) {
       const hasPermission = await this.casbinService.enforce(
-        user.id || user.sub,
+        user.role.name,
         requiredPermission.resource,
         requiredPermission.action,
       );

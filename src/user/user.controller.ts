@@ -1,11 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseFilters } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserInput, UpdateUserInput } from './dto/input/user.input';
+import { HttpExceptionFilter } from '@common/filters/exception.filter';
+import { RequirePermission } from '@common/decorators/casbin.decorator';
 
+@UseFilters(HttpExceptionFilter)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @RequirePermission('users', 'create')
   @Post()
   create(@Body() input: CreateUserInput) {
     return this.userService.create(input);

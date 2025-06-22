@@ -1,14 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors, Query, UseFilters, UseGuards } from '@nestjs/common';
 import { FileService } from './file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFileInput, UpdateFileInput } from './dto/input/file.input';
 import { UserWithAuth } from 'src/auth/dto/responses/auth.response';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
+import { HttpExceptionFilter } from '@common/filters/exception.filter';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { RequirePermission } from '@common/decorators/casbin.decorator';
+import { CasbinGuard } from 'src/auth/guards/casbin.guard';
 
-@Controller('file')
+@UseFilters(HttpExceptionFilter)
+@UseGuards(CasbinGuard)
+@UseGuards(JwtAuthGuard)
+@Controller('files')
 export class FileController {
   constructor(private readonly fileService: FileService) { }
 
+  @RequirePermission('files', 'create')
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body: CreateFileInput, @CurrentUser() owner: UserWithAuth) {

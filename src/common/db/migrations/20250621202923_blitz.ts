@@ -12,13 +12,13 @@ import type { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   return await knex.schema
     .createTable('roles', (table) => {
-      table.uuid('id').primary().notNullable();
+      table.uuid('id').primary().notNullable().defaultTo(knex.raw('gen_random_uuid()'));
       table.string('name').notNullable().unique();
       table.string('status').notNullable().defaultTo('active');
       table.timestamps(true, true);
     })
     .createTable('rolePermissions', (table) => {
-      table.uuid('id').primary().notNullable();
+      table.uuid('id').primary().notNullable().defaultTo(knex.raw('gen_random_uuid()'));
       table.uuid('roleId').notNullable().references('id').inTable('roles').onDelete('CASCADE');
       table.string('roleName').notNullable();
       table.string('object').notNullable();
@@ -26,7 +26,7 @@ export async function up(knex: Knex): Promise<void> {
       table.timestamps(true, true, true);
     })
     .createTable('users', (table) => {
-      table.uuid('id').primary().notNullable();
+      table.uuid('id').primary().notNullable().defaultTo(knex.raw('gen_random_uuid()'));
       table
         .string('email')
         .notNullable()

@@ -1,0 +1,12 @@
+p,admin,files,create
+p,admin,files,read
+p,admin,files,update
+p,admin,files,delete
+p,admin,users,read
+p,admin,audit,read
+p,super_admin,roles,create
+p,manager,files,create
+p,manager,files,read
+p,manager,files,update
+p,employee,files,create
+p,employee,files,read

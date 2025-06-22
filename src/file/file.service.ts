@@ -117,7 +117,7 @@ export class FileService {
     };
   }
 
-  async findOne(fileId: string, userId: string, userRole: string): Promise<File | null> {
+  async findOne(fileId: string, userId: string, userRole: UserRole): Promise<File | null> {
     const query = this.filemodel.query()
       .alias('f')
       .joinRelated('users as u')
@@ -138,7 +138,7 @@ export class FileService {
   async update(
     fileId: string,
     userId: string,
-    userRole: string,
+    userRole: UserRole,
     updates: Partial<Pick<File, 'permissionLevel' | 'tags' | 'metadata'>>
   ): Promise<File | null> {
     const file = await this.findOne(fileId, userId, userRole);
@@ -146,7 +146,7 @@ export class FileService {
       return null;
     }
 
-    if (file.ownerId !== userId && userRole !== 'admin') {
+    if (file.ownerId !== userId && userRole !== UserRole.Admin) {
       throw new Error('Insufficient permissions to update file');
     }
 
