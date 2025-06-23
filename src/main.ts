@@ -10,6 +10,9 @@ export let CONFIG: ReturnType<typeof getAppConfig>;
 async function bootstrap() {
   dbSetup()
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    "origin": "*"
+  });
   app.setGlobalPrefix('api', {
   exclude: [{ path: 'health', method: RequestMethod.GET }],
 });

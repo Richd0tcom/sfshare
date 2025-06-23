@@ -51,4 +51,14 @@ export class AuthService {
     return user
   }
 
+  async profile(id: string) {
+   const user = await this.userModel.query().findOne({ id }).withGraphFetched('[role]');
+
+      if (!user ) {
+      throw new UnauthorizedException('email or password incorrect')
+    }
+
+    return user
+  }
+
 }

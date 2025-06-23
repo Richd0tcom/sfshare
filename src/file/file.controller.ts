@@ -23,6 +23,7 @@ export class FileController {
     return this.fileService.upload(body, file, owner.id)
   }
 
+  @RequirePermission('files', 'read')
   @Get()
   findAll(@Query('page') page: string,
     @Query('limit') limit: string,
@@ -31,15 +32,17 @@ export class FileController {
     @Query('permissionLevel') permissionLevel: string,
     @CurrentUser() user: UserWithAuth
   ) {
-    return this.fileService.findAll(user.id, user.role.name, );
+    return this.fileService.findAll(user.id, user.role.name, Number(page), Number(limit), search, permissionLevel, tags);
   }
 
+  @RequirePermission('files', 'read')
   @Get(':id')
   findOne(@Param('id') id: string, @CurrentUser() currentUser: UserWithAuth) {
 
     return this.fileService.findOne(id,currentUser.id, currentUser.role.name);
   }
 
+  @RequirePermission('files', 'update')
   @Patch(':id')
   update(@Param('id') id: string, @Body() body: UpdateFileInput, @CurrentUser() user: UserWithAuth) {
     return this.fileService.update(id, user.id, user.role.name, body);

@@ -1,6 +1,7 @@
-import { Model } from "objection";
+import { Model, RelationMappings, RelationMappingsThunk } from "objection";
 import mixins from "../db/mixin";
 import { PermissionLevel } from "@common/enums";
+import { User } from "./user.schema";
 
 
 export class File extends mixins(Model) {
@@ -22,4 +23,19 @@ export class File extends mixins(Model) {
 
     public createdAt: Date | string;
     public updatedAt: Date | string;
+
+    public owner: User;
+
+    static relationMappings: RelationMappings | RelationMappingsThunk = {
+
+
+        owner: {
+            relation: Model.HasOneRelation,
+            modelClass: User,
+            join: {
+                from: 'files.ownerId',
+                to: 'users.id',
+            },
+        },
+    };
 }

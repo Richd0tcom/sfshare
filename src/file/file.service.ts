@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import fs from 'fs/promises';
+import fs, { readFile, unlink, writeFile } from 'fs/promises';
 import { encryptFile, generateEncryptionKey } from '@common/helpers/encryption';
 import { CreateFileInput } from './dto/input/file.input';
 import { ModelClass } from 'objection';
@@ -24,9 +24,11 @@ export class FileService {
     let encryptionKey: string | undefined;
     let finalFilePath = file.path;
 
+    console.log(file.path)
+
     if (this.configSevice.get<string>('ENCRYPT_FILES') === 'true') {
       encryptionKey = generateEncryptionKey();
-      const fileBuffer = await fs.readFile(file.path);
+      const fileBuffer = await readFile(file.path);
       const { encrypted, iv, tag } = encryptFile(fileBuffer, encryptionKey);
 
       const encryptedPath = `${file.path}.encrypted`;
@@ -36,8 +38,8 @@ export class FileService {
         tag
       };
 
-      await fs.writeFile(encryptedPath, JSON.stringify(encryptedData));
-      await fs.unlink(file.path); // Remove original file
+      await writeFile(encryptedPath, JSON.stringify(encryptedData));
+      await unlink(file.path); // Remove original file
       finalFilePath = encryptedPath;
     }
 
@@ -89,7 +91,7 @@ export class FileService {
     if (search) {
       query.where(function (builder) {
         builder.where('f.originalName', 'ilike', `%${search}%`)
-          .orWhereRaw('tags && ARRAY[?]::varchar[]', [search]);
+          .orWhereRaw('tags && ARRAY[?]::text[]', [search]);
       });
     }
 
@@ -120,7 +122,7 @@ export class FileService {
   async findOne(fileId: string, userId: string, userRole: UserRole): Promise<File | null> {
     const query = this.filemodel.query()
       .alias('f')
-      .joinRelated('users as u')
+      .joinRelated('owner as u')
       .select('f.*', 'u.email as owner_email')
       .where('f.id', fileId);
 
@@ -145,11 +147,6 @@ export class FileService {
     if (!file) {
       return null;
     }
-
-    if (file.ownerId !== userId && userRole !== UserRole.Admin) {
-      throw new Error('Insufficient permissions to update file');
-    }
-
 
     const updateData: Partial<File> = {};
 

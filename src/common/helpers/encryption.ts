@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';
+import { randomBytes, createCipheriv, createDecipheriv } from 'node:crypto';
 
 const ALGORITHM = 'aes-256-gcm';
 const KEY_LENGTH = 32;
@@ -6,13 +6,13 @@ const IV_LENGTH = 16;
 // const TAG_LENGTH = 16;
 
 export const generateEncryptionKey = (): string => {
-  return crypto.randomBytes(KEY_LENGTH).toString('hex');
+  return randomBytes(KEY_LENGTH).toString('hex');
 };
 
 export const encryptFile = (buffer: Buffer, key: string): { encrypted: Buffer; iv: string; tag: string } => {
   const keyBuffer = Buffer.from(key, 'hex');
-  const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv(ALGORITHM, keyBuffer, iv);
+  const iv = randomBytes(IV_LENGTH);
+  const cipher = createCipheriv(ALGORITHM, keyBuffer, iv);
   
   const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
   const tag = cipher.getAuthTag();
@@ -29,7 +29,7 @@ export const decryptFile = (encryptedBuffer: Buffer, key: string, iv: string, ta
   const ivBuffer = Buffer.from(iv, 'hex');
   const tagBuffer = Buffer.from(tag, 'hex');
   
-  const decipher = crypto.createDecipheriv(ALGORITHM, keyBuffer, ivBuffer);
+  const decipher = createDecipheriv(ALGORITHM, keyBuffer, ivBuffer);
   decipher.setAuthTag(tagBuffer);
   
   return Buffer.concat([decipher.update(encryptedBuffer), decipher.final()]);

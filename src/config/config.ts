@@ -11,6 +11,7 @@ export const getConfig = () => ({
     JWT_SECRET: process.env.JWT_SECRET,
     APP_NAME: process.env.APP_NAME || 'MyApp',
     APP_ENV: process.env.APP_ENV || 'development',
+    ENCRYPT_FILES: process.env.ENCRYPT_FILES
 });
 
 
@@ -27,6 +28,7 @@ const config = (configService: ConfigService) => ({
     JWT_SECRET: configService.getOrThrow<string>('JWT_SECRET'),
     APP_NAME: configService.getOrThrow<string>('APP_NAME') || 'MyApp',
     APP_ENV: configService.getOrThrow<string>('APP_ENV') || 'development',
+    ENCRYPT_FILES: configService.getOrThrow<string>('ENCRYPT_FILES') || "false"
 });
 
 export const getAppConfig = (

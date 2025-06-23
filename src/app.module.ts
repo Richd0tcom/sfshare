@@ -18,7 +18,7 @@ import { DbModule } from '@common/db/db.module';
       isGlobal: true,
       load: [()=> getConfig],
     }),
-
+    SocketModule,
 
     AuthModule,
 
@@ -28,7 +28,7 @@ import { DbModule } from '@common/db/db.module';
 
     AuditModule,
 
-    SocketModule
+    
 
   ],
   controllers: [AppController],
