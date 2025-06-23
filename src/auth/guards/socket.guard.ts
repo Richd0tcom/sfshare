@@ -28,7 +28,6 @@ export class SocketAuthGuard implements CanActivate {
       client.data = client.data || {};
       client.data.user = decoded;
 
-      console.log("Running socket guard : ", client.data)
       return true;
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired token');

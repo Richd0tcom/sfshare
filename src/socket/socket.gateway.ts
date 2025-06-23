@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
@@ -23,6 +23,7 @@ interface ConnectedUser {
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private connectedUsers: Map<string, ConnectedUser> = new Map(); //recheck this to aviod mem leaks
+  private logger = new Logger(SocketGateway.name)
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -64,22 +65,24 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     const user = client.data.user as UserWithAuth
+
     this.connectedUsers.delete(user.id);
   }
 
 
   notifyAllUsers(event: string, data: any): void {
+    
     this.server.emit(event, data);
-    // logger.info(`Broadcast sent: ${event} to ${this.connectedUsers.size} users`);
+    this.logger.log(`Broadcast sent: ${event} to ${this.connectedUsers.size} users`);
   }
 
   notifyUser(userId: string, event: string, data: any): void {
     const user = this.connectedUsers.get(userId);
     if (user) {
       this.server.to(user.socketId).emit(event, data);
-      // logger.info(`Notification sent to user ${userId}: ${event}`);
+      this.logger.log(`Notification sent to user ${userId}: ${event}`);
     } else {
-      // logger.info(`User ${userId} not connected, notification not sent: ${event}`);
+      this.logger.log(`User ${userId} not connected, notification not sent: ${event}`);
     }
   }
 

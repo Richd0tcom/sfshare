@@ -9,7 +9,7 @@ export class CasbinService {
   ) {}
 
   async enforce(sub: string, obj: string, act: string): Promise<boolean> {
-    console.log("getting sub",await this.enforcer.getRolesForUser(sub))
+   
     return await this.enforcer.enforce(sub, obj, act);
   }
 

@@ -9,6 +9,7 @@ import { extname } from 'path';
 import {accessSync, mkdirSync} from 'node:fs';
 import { SocketModule } from 'src/socket/socket.module';
 import { SocketGateway } from 'src/socket/socket.gateway';
+import { EventEmitter } from '@common/helpers/event-emmiter.service';
 
 @Module({
   imports: [
@@ -38,6 +39,6 @@ import { SocketGateway } from 'src/socket/socket.gateway';
     SocketModule
   ],
   controllers: [FileController],
-  providers: [FileService, SocketGateway],
+  providers: [FileService, SocketGateway, EventEmitter],
 })
 export class FileModule { }

@@ -9,6 +9,7 @@ import { AuditModule } from './audit/audit.module';
 import { SocketModule } from './socket/socket.module';
 import { getConfig } from './config/config';
 import { DbModule } from '@common/db/db.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { DbModule } from '@common/db/db.module';
       isGlobal: true,
       load: [()=> getConfig],
     }),
+     EventEmitterModule.forRoot({ global: true }),
     SocketModule,
 
     AuthModule,

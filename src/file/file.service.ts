@@ -5,8 +5,9 @@ import { CreateFileInput } from './dto/input/file.input';
 import { ModelClass } from 'objection';
 import { File, User } from '@common/schema';
 import { ConfigService } from '@nestjs/config';
-import { PermissionLevel, UserRole } from '@common/enums';
+import { AppEvents, PermissionLevel, UserRole, WebsocketEvents } from '@common/enums';
 import { SocketGateway } from 'src/socket/socket.gateway';
+import { EventEmitter } from '@common/helpers/event-emmiter.service';
 
 
 
@@ -18,13 +19,13 @@ export class FileService {
     @Inject('User') private usermodel: ModelClass<User>,
     private configSevice: ConfigService,
     private readonly socketGateway: SocketGateway,
+    private readonly emitter: EventEmitter
 
   ) { }
   async upload(input: CreateFileInput, file: Express.Multer.File, ownerId: string): Promise<File> {
     let encryptionKey: string | undefined;
     let finalFilePath = file.path;
 
-    console.log(file.path)
 
     if (this.configSevice.get<string>('ENCRYPT_FILES') === 'true') {
       encryptionKey = generateEncryptionKey();
@@ -60,8 +61,15 @@ export class FileService {
     ]) 
 
     if(user?.role.name === UserRole.Admin) {
-      this.socketGateway.notifyAllUsers('new-admin-file-available', {})
+      this.socketGateway.notifyAllUsers(WebsocketEvents.NewAdminFile, {filename: result.filename })
+      
     }
+    this.emitter.emitActivity(AppEvents.LogActivity, {
+      action: AppEvents.FileUpload,
+      userId: ownerId,
+      resourceType: "file",
+      resourceId: result.id,
+    })
 
     return result;
   }
@@ -172,8 +180,14 @@ export class FileService {
       .query()
       .patchAndFetchById(fileId, updateData);
 
-    this.socketGateway.notifyUser(file.ownerId, 'admin-file-update', `File metadata updated: ${fileId} by user ${userId}`)
+    this.socketGateway.notifyUser(file.ownerId, WebsocketEvents.AdminFileUpdate, `File metadata updated: ${fileId} by user ${userId}`)
+    this.emitter.emitActivity(AppEvents.LogActivity, {
+      action: AppEvents.FileUdate,
+      userId,
+      resourceType: "file",
+      resourceId: fileId,
 
+    } )
     // logger.info(`File metadata updated: ${fileId} by user ${userId}`);
     return updated;
   }

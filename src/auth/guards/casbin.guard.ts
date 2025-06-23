@@ -26,15 +26,14 @@ export class CasbinGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    this.logger.log(`User: ${JSON.stringify(user)}`);
+
     
     if (!user) {
       throw new ForbiddenException('User not authenticated');
     }
 
     const role = await this.roleModel.query().findById(user.roleId)
-    console.log(role)
-    this.logger.log(`Role: ${JSON.stringify(role)}`);
+ 
     if(!role) {
       throw new ForbiddenException('invalid credentials')
     }
@@ -46,7 +45,6 @@ export class CasbinGuard implements CanActivate {
       action: string;
     }>(CASBIN_PERMISSION_KEY, [context.getHandler(), context.getClass()]);
 
-    console.log('reqiPerm: ', requiredPermission)
     if (requiredPermission) {
       const hasPermission = await this.casbinService.enforce(
         user.role.name,

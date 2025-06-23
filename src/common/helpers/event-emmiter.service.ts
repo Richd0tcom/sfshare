@@ -13,19 +13,12 @@ export class EventEmitter {
 
   emitActivity(
     event: string | string[],
-    action: string,
-
-    details: Record<string, unknown>,
-        userId?: string,
+    input: CreateAuditInput,
   ): void {
     if (Array.isArray(event)) {
-      event.forEach((e) => this.emit<CreateAuditInput>(e, { action, details, userId }));
+      event.forEach((e) => this.emit<CreateAuditInput>(e, input));
       return;
     }
-    this.emit<CreateAuditInput>(event, {
-      action,
-      details,
-      userId
-    });
+    this.emit<CreateAuditInput>(event, input);
   }
 }
