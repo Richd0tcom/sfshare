@@ -1,18 +1,52 @@
 services:
-  postg:
+
+  backend:
+    build: ./backend
+    ports:
+      - "7322:7322"
+    depends_on:
+      postgg:
+        condition: service_healthy
+    environment:
+      - PORT=7322
+      - DB_HOST=postgg
+      - DB_PORT=5432
+      - DB_NAME=filesharing
+      - DB_USER=root
+      - DB_PASSWORD=asdfgh
+      - JWT_SECRET=your_jwt_secret
+      - APP_NAME=sfshare
+      - APP_ENV=development
+      - ENCRYPT_FILES=true
+    volumes:
+      - ./backend:/app # For development, enable hot-reloading
+      - /app/node_modules # Exclude node_modules from host volume
+    command: /bin/sh -c "sleep 50 && npm run migrateup && node dist/main"
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_BASE_URL=http://backend:7322
+    volumes:
+      - ./frontend:/app # For development
+      - /app/node_modules # Exclude node_modules from host volume
+  postgg:
     image: postgres:15-alpine
-    container_name: postgres_db
+    container_name: postgres_db_other
     environment:
       - POSTGRES_PASSWORD=asdfgh
       - POSTGRES_USER=root
       - POSTGRES_DB=filesharing
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-root} -d ${POSTGRES_DB:-siren_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-root} -d ${POSTGRES_DB:-filesharing}"]
       interval: 2s
       timeout: 5s
       retries: 10
