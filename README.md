@@ -146,7 +146,7 @@ docker compose up postgres -d
 cd backend
 pnpm run migrateup
 
-# Run database seeds (if any)
+# Run database seeds
 pnpm run seed
 
 # Start the backend development server
@@ -157,7 +157,7 @@ cd ../frontend
 pnpm run dev
 ```
 
-### Option 2: Full Containerized Setup (Recommended for Production)
+### Option 2: Full Containerized Setup 
 
 This approach runs both PostgreSQL and the application in containers using docker-compose.
 
@@ -173,11 +173,16 @@ cp .env.example .env
 # Build and start all services
 docker compose up -d
 
+# Run database seeds
+pnpm run seed
+
 # The application will be available at:
 # Backend API: http://localhost:3000
 # Frontend: http://localhost:5173
 # PostgreSQL: localhost:5434
 ```
+
+``docker compose up -d`` should start up the frontend/UI
 
 ### Environment Variables
 
