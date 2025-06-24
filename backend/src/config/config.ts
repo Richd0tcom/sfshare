@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 
 export const getConfig = () => ({
     port: parseInt(process.env.PORT as string, 10) || 3000,
@@ -13,9 +14,6 @@ export const getConfig = () => ({
     APP_ENV: process.env.APP_ENV || 'development',
     ENCRYPT_FILES: process.env.ENCRYPT_FILES
 });
-
-
-import { ConfigService } from '@nestjs/config';
 
 const config = (configService: ConfigService) => ({
     database: {

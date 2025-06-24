@@ -47,7 +47,7 @@ export async function up(knex: Knex): Promise<void> {
       table.uuid('ownerId').notNullable().references('id').inTable('users').onDelete('CASCADE');
       table.string('permissionLevel', 50).notNullable().defaultTo('private');
       table.specificType('tags', 'text[]').defaultTo(knex.raw('ARRAY[]::text[]'));
-      table.jsonb('metadata').defaultTo(knex.raw("'{}'::jsonb"));
+      table.jsonb('metadata').defaultTo(JSON.stringify({}));
       
       table.timestamps(true, true, true);
     }).createTable('auditLogs', (table) => {
@@ -56,7 +56,7 @@ export async function up(knex: Knex): Promise<void> {
       table.string('action', 100).notNullable();
       table.string('resourceType', 50).notNullable();
       table.uuid('resourceId');
-      table.jsonb('details').defaultTo(knex.raw("'{}'::jsonb"));
+      table.jsonb('details').defaultTo(JSON.stringify({}));
       table.specificType('ipAddress', 'inet');
       table.text('userAgent');
       table.timestamps(true, true, true);
