@@ -21,7 +21,7 @@ services:
     volumes:
       - ./backend:/app # For development, enable hot-reloading
       - /app/node_modules # Exclude node_modules from host volume
-    command: /bin/sh -c "sleep 50 && npm run migrateup && node dist/main"
+    command: node dist/main
   frontend:
     build: ./frontend
     ports:

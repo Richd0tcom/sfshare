@@ -119,17 +119,19 @@ GET /health                  # Server health status
 ```bash
 # Clone repository and install dependencies
 git clone https://github.com/Richd0tcom/sfshare.git
-cd sfshare
+cd sfshare/backend
 npm install
 
 # Start PostgreSQL (recommended: Docker)
-docker compose up -d
+docker compose postgg up  -d
 
 # Copy and configure environment variables
 cp .env.example .env
 # Edit .env with your DB and JWT settings
 
 # Run database migrations (if any)
+docker exec -it postgres15 createdb --username=root --owner=root filesharing
+
 # pnpm run migrate
 
 # Development
@@ -139,6 +141,8 @@ pnpm run dev
 pnpm run build
 pnpm start
 ```
+
+``docker compose up -d`` should start up the frontend/UI
 
 ### Environment Variables
 
