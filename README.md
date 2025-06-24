@@ -113,34 +113,75 @@ GET /health                  # Server health status
 - Node.js 18+
 - PostgreSQL 12+ (or Docker)
 - pnpm or yarn
+- Docker & Docker Compose (for containerized setup)
 
-### Installation
+### Option 1: PostgreSQL Container + Host App (Recommended for Development)
+
+This approach runs PostgreSQL in a container while running the application on your host machine for easier debugging and development.
 
 ```bash
 # Clone repository and install dependencies
 git clone https://github.com/Richd0tcom/sfshare.git
 cd sfshare
-npm install
 
-# Start PostgreSQL (recommended: Docker)
-docker compose up -d
+# Install backend dependencies
+cd backend
+pnpm install
+
+# Install frontend dependencies
+cd ../frontend
+pnpm install
+
+# Return to project root
+cd ..
 
 # Copy and configure environment variables
 cp .env.example .env
-# Edit .env with your DB and JWT settings
+# Edit .env with your database and JWT settings
 
-# Run database migrations (if any)
-# pnpm run migrate
+# Start PostgreSQL container only
+docker compose up postgres -d
 
-# Development
+# Wait for PostgreSQL to be ready, then run database migrations
+cd backend
+pnpm run migrateup
+
+# Run database seeds (if any)
+pnpm run seed
+
+# Start the backend development server
+pnpm run start:dev
+
+# In a new terminal, start the frontend development server
+cd ../frontend
 pnpm run dev
+```
 
-# Production
-pnpm run build
-pnpm start
+### Option 2: Full Containerized Setup (Recommended for Production)
+
+This approach runs both PostgreSQL and the application in containers using docker-compose.
+
+```bash
+# Clone repository
+git clone https://github.com/Richd0tcom/sfshare.git
+cd sfshare
+
+# Copy and configure environment variables
+cp .env.example .env
+# Edit .env with your database and JWT settings
+
+# Build and start all services
+docker compose up -d
+
+# The application will be available at:
+# Backend API: http://localhost:3000
+# Frontend: http://localhost:5173
+# PostgreSQL: localhost:5434
 ```
 
 ### Environment Variables
+
+Create a `.env` file in the project root with the following variables:
 
 ```env
 # Database
@@ -156,7 +197,46 @@ ENCRYPT_FILES=true
 
 # Server
 PORT=3000
-NODE_ENV=production
+NODE_ENV=development
+
+# File Upload
+MULTER_DEST=./uploads
+```
+
+### Development Commands
+
+```bash
+# Backend (from backend/ directory)
+pnpm run start:dev          # Start development server with hot reload
+pnpm run build              # Build for production
+pnpm run start:prod         # Start production server
+pnpm run test               # Run tests
+pnpm run test:e2e           # Run end-to-end tests
+pnpm run migrateup          # Run database migrations
+pnpm run migratedown        # Rollback database migrations
+pnpm run seed               # Run database seeds
+
+# Frontend (from frontend/ directory)
+pnpm run dev                # Start development server
+pnpm run build              # Build for production
+pnpm run preview            # Preview production build
+```
+
+### Database Management
+
+```bash
+# Run migrations
+cd backend
+pnpm run migrateup
+
+# Rollback migrations
+pnpm run migratedown
+
+# Run seeds
+pnpm run seed
+
+# Test database connection
+pnpm run db:test
 ```
 
 ---

@@ -9,6 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "db:test": "node -e \"const knex = require('knex')(require('./dist/common/db/knexfile.js').development); knex.raw('SELECT 1').then(() => {console.log('DB OK'); process.exit(0);}).catch(err => {console.error('DB Error:', err.message); process.exit(1);});\"",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -19,6 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migrateup": "npx knex migrate:latest --knexfile \"./src/common/db/*.{ts,js}\"",
+    "migrateup-build": "npx knex migrate:latest --knexfile \"./dist/common/db/knexfile.cjs\"",
     "migratedown": "npx knex migrate:down --knexfile \"./src/common/db/*.{ts,js}\"",
     "seed": "npx knex seed:run --knexfile \"./src/common/db/*.{ts,js}\""
   },

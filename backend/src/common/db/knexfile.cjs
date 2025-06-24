@@ -1,18 +1,16 @@
-import type { Knex } from "knex";
-import { config as cfig} from "dotenv";
+const config = require("dotenv");
+const join  = require('path');
 
-import { join} from 'path';
-cfig({
-  
-  path: join(__dirname,'../../../.env')
+config.config({
+  path: join.join(__dirname, '.env')
 });
 
+console.log("envs", process.env.DB_USER, process.env.DB_PASSWORD, process.env.DB_HOST, process.env.DB_PORT, process.env.DB_NAME);
 
-const config: { [key: string]: Knex.Config } = {
+const dbConfig = {
   development: {
     client: "pg",
     connection: {
-      // uri: process.env.DB_URI
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
       port: Number(process.env.DB_PORT),
@@ -25,14 +23,12 @@ const config: { [key: string]: Knex.Config } = {
     },
     migrations: {
       tableName: 'knex_migrations',
+      directory: './migrations'
     },
     seeds: {
       directory: './seeds',
     },
   },
-
-
-
   production: {
     client: "pg",
     connection: {
@@ -48,13 +44,13 @@ const config: { [key: string]: Knex.Config } = {
       max: 10
     },
     migrations: {
-      tableName: "knex_migrations"
+      tableName: "knex_migrations",
+      directory: './migrations'
     },
     seeds: {
       directory: './seeds',
     },
   }
-
 };
 
-export default config;
+module.exports = dbConfig;

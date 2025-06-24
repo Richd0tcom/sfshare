@@ -8,12 +8,13 @@ services:
       postgg:
         condition: service_healthy
     environment:
+      - DB_URI=postgresql://root:Madara123@postgg:5432/filesharing
       - PORT=7322
       - DB_HOST=postgg
       - DB_PORT=5432
       - DB_NAME=filesharing
       - DB_USER=root
-      - DB_PASSWORD=asdfgh
+      - DB_PASSWORD=Madara123
       - JWT_SECRET=your_jwt_secret
       - APP_NAME=sfshare
       - APP_ENV=development
@@ -21,7 +22,7 @@ services:
     volumes:
       - ./backend:/app # For development, enable hot-reloading
       - /app/node_modules # Exclude node_modules from host volume
-    command: /bin/sh -c "sleep 50 && npm run migrateup && node dist/main"
+    command: /bin/sh -c "sleep 50 && pnpm run migrateup && pnpm run start:dev"
   frontend:
     build: ./frontend
     ports:
@@ -34,16 +35,17 @@ services:
       - ./frontend:/app # For development
       - /app/node_modules # Exclude node_modules from host volume
   postgg:
-    image: postgres:15-alpine
-    container_name: postgres_db_other
+    image: postgres:17-alpine
+    container_name: postgres_db_other2
     environment:
-      - POSTGRES_PASSWORD=asdfgh
+      - POSTGRES_PASSWORD=Madara123
       - POSTGRES_USER=root
-      - POSTGRES_DB=filesharing
     ports:
-      - "5434:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql
+      - postgres_data2:/var/lib/postgresql/data
+      # - /init-postgres.sql:docker-entrypoint-initdb.d/init-postgres.sql
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-root} -d ${POSTGRES_DB:-filesharing}"]
@@ -54,4 +56,4 @@ services:
 
 
 volumes:
-  postgres_data:
+  postgres_data2:
